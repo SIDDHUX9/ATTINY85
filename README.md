@@ -2,3 +2,8 @@
 will publish attiny 85 codes here 
 1.rubber ducky
 2. wifi grabber
+
+WIFI GRABBER(uploaded)
+-THIS CODE IS INSPIRED FROM MTK911
+-I HAVE MODIFIED IT TO ACHIEVE ALMOST 100% HITRATE
+-DON'T FORGET TO CHANGE YOUR WEEBHOOK URL AFTER 5DAYS(FREE LINK EXPIRE IN 5DAYS) But don't worry it's free to generate.
